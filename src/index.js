@@ -11,6 +11,7 @@ const genuuid = require('./genuuid');
 const EventEmitter = require('events').EventEmitter;
 const util = require('util');
 const bind = require('component-bind');
+const ClockServer = require('syncsocket-clock-server');
 
 /**
  * Module exports
@@ -41,6 +42,10 @@ function Server(opts) {
     this.maxChannels = opts.maxChannels || 64;
     this.maxClients = opts.maxClients || 1024;
     this.defaultTimeserver = opts.defaultTimeserver || 'localhost';
+
+    this.clockServer = ClockServer();
+    this.clockServer.listen(5579);
+
     this.setup();
 }
 
@@ -94,6 +99,7 @@ Server.prototype.close = function () {
         return this;
     this.io.close();
     this.listening = false;
+    this.clockServer.close();
     debug('Server is shutting down now.');
     return this;
 };
