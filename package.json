@@ -1,0 +1,37 @@
+{
+  "name": "syncsocket",
+  "version": "0.1.0",
+  "description": "Synchronized messaging application framework server",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "mocha --reporter spec -w",
+    "test:single": "mocha --reporter spec",
+    "cover": "istanbul cover _mocha -- -R spec test/*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/woyorus/syncsocket.git"
+  },
+  "keywords": [
+    "syncsocket",
+    "realtime",
+    "truetime",
+    "synchronization",
+    "events"
+  ],
+  "author": "Kirill Kravinsky <woyorus@gmail.com> (http://github.com/woyorus)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/woyorus/syncsocket/issues"
+  },
+  "homepage": "https://github.com/woyorus/syncsocket",
+  "devDependencies": {
+    "chai": "3.5.0",
+    "istanbul": "0.4.4",
+    "mocha": "2.5.3"
+  },
+  "dependencies": {
+    "debug": "2.2.0",
+    "socket.io": "1.4.8"
+  }
+}
