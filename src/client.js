@@ -20,6 +20,8 @@ module.exports = Client;
  * @public
  */
 function Client(server, socket) {
+    if (!(this instanceof Client)) return new Client(server, socket);
+
     this.server = server;
     this.socket = socket;
     this.tag    = 'unknown-client';

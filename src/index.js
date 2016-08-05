@@ -41,7 +41,7 @@ function Server(opts) {
     opts = opts || {};
     this.maxChannels = opts.maxChannels || 64;
     this.maxClients = opts.maxClients || 1024;
-    this.defaultTimeserver = opts.defaultTimeserver || 'localhost';
+    this.defaultTimeserver = opts.defaultTimeserver || 'http://localhost:5579';
 
     this.clockServer = ClockServer();
     this.clockServer.listen(5579);

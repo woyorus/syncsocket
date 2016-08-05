@@ -34,6 +34,8 @@ util.inherits(Channel, EventEmitter);
  * @public
  */
 function Channel(server, opts) {
+    if (!(this instanceof Channel)) return new Channel(server, opts);
+
     opts = opts || {};
 
     this.server = server;
