@@ -1,8 +1,3 @@
-
-/**
- *  Module exports
- */
-
 module.exports = genuuid;
 
 /*

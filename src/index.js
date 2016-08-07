@@ -1,8 +1,3 @@
-
-/**
- *  Module dependencies
- */
-
 const io = require('socket.io');
 const debug = require('debug')('syncsocket:server');
 const Channel = require('./channel');
@@ -13,18 +8,9 @@ const util = require('util');
 const bind = require('component-bind');
 const ClockServer = require('syncsocket-clock-server');
 
-/**
- * Module exports
- */
-
 module.exports = Server;
 
-/**
- * Mix in EventEmitter
- */
-
 util.inherits(Server, EventEmitter);
-
 
 /**
  * Server constructor

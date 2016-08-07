@@ -1,8 +1,3 @@
-/**
- *  Module dependencies
- */
-
-
 const EventEmitter = require('events').EventEmitter;
 const util = require('util');
 const debug = require('debug')('syncsocket:channel');
@@ -10,16 +5,7 @@ const genuuid = require('./genuuid');
 const bind = require('component-bind');
 const ClockClient = require('syncsocket-clock-client');
 
-
-/**
- *  Module exports
- */
-
 module.exports = Channel;
-
-/**
- * Mix in Emitter
- */
 
 util.inherits(Channel, EventEmitter);
 

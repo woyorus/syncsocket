@@ -1,14 +1,5 @@
-
-/**
- *  Module dependencies
- */
-
 const debug = require('debug')('syncsocket:client');
 const bind = require('component-bind');
-
-/**
- *  Module exports
- */
 
 module.exports = Client;
 
@@ -27,17 +18,6 @@ function Client(server, socket) {
     this.tag    = 'unknown-client';
     this.bindEvents();
 }
-
-/**
- * Push message to the client.
- * The message will be delivered as soon as possible without
- * any synchrnoziation. On the client,
- * @param  {[type]} topic     [description]
- * @param  {[type]} data      [description]
- */
-Client.prototype.pushMessage = function (topic, data) {
-    this.socket.emit('inbound.' + topic, data);
-};
 
 /**
  * Sends a message to client
