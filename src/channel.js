@@ -48,8 +48,7 @@ Channel.prototype.sync = function () {
         .then(syncResult => {
             if (syncResult.successful === true) {
                 this.onSyncSuccess(syncResult);
-            }
-            else {
+            } else {
                 this.onSyncFailure(syncResult);
             }
         })
@@ -144,7 +143,7 @@ Channel.prototype.synchronizeClient = function (client) {
  * @ublic
  */
 Channel.prototype.hasClient = function (client) {
-    return this.clients.indexOf(client) != -1;
+    return this.clients.indexOf(client) !== -1;
 };
 
 /**
@@ -224,8 +223,7 @@ Channel.prototype.injectMessage = function (envelope, originatingClient) {
 
     if (topicParts[0] === 'service') {
         this.processServiceMessage(envelope, originatingClient);
-    }
-    else if (topicParts[0] === 'user') {
+    } else if (topicParts[0] === 'user') {
         this.processUserMessage(envelope, originatingClient);
     }
 };
@@ -237,7 +235,7 @@ Channel.prototype.injectMessage = function (envelope, originatingClient) {
  * @private
  */
 Channel.prototype.processServiceMessage = function (envelope, originatingClient) {
-    if (envelope.topic == 'service.reportstate') {
+    if (envelope.topic === 'service.reportstate') {
         var oldState = this.clientStates[originatingClient.id];
         var newState = envelope.data.toState;
         this.clientStates[originatingClient.id] = newState;
@@ -334,7 +332,6 @@ Channel.prototype.waitUntilReady = function (clients) {
     };
 
     return new Promise(function (resolve, reject) {
-
         var onClientStateUpdate = function (client, newState) {
             if (allReady() === true) {
                 that.removeListener('clientStateChange', onClientStateUpdate);
@@ -355,7 +352,7 @@ Channel.prototype.getIdleClients = function () {
     var idleClients = [];
     var that = this;
     this.clients.forEach(function (client) {
-        if (that.clientStates[client.id] == 'idle') {
+        if (that.clientStates[client.id] === 'idle') {
             idleClients.push(client);
         }
     });

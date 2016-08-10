@@ -1,4 +1,3 @@
-const debug = require('debug')('syncsocket:client');
 const bind = require('component-bind');
 
 module.exports = Client;
@@ -15,7 +14,7 @@ function Client(server, socket) {
 
     this.server = server;
     this.socket = socket;
-    this.tag    = 'unknown-client';
+    this.tag = 'unknown-client';
     this.bindEvents();
 }
 

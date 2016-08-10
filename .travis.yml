@@ -13,7 +13,7 @@ before_install:
 before_script:
   - npm prune
 script:
-  - npm run test:single
+  - npm test
   - npm run cover
 after_success:
   - bash <(curl -s https://codecov.io/bash)

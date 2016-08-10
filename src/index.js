@@ -81,8 +81,9 @@ Server.prototype.listen = function (port) {
  * @public
  */
 Server.prototype.close = function () {
-    if (this.listening === false)
+    if (this.listening === false) {
         return this;
+    }
     this.io.close();
     this.listening = false;
     this.clockServer.close();
@@ -209,7 +210,7 @@ Server.prototype.getChannel = function (channelId) {
  * @private
  */
 Server.prototype.handleMessage = function (envelope, client) {
-    //debug('handling message from client ' + client.id);
+    debug('handling message from client ' + client.id);
     var channelId = envelope.channelId;
     var channel = this.getChannel(channelId);
     if (channel !== null) {

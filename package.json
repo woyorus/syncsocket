@@ -4,9 +4,8 @@
   "description": "Synchronized messaging application framework server",
   "main": "src/index.js",
   "scripts": {
-    "test": "mocha --reporter spec -w",
-    "test:single": "mocha --reporter spec",
-    "cover": "istanbul cover _mocha -- -R spec test/*"
+    "test": "gulp test",
+    "cover": "gulp test-cov"
   },
   "repository": {
     "type": "git",
@@ -26,10 +25,15 @@
   },
   "homepage": "https://github.com/woyorus/syncsocket",
   "devDependencies": {
+    "babel-eslint": "6.1.2",
     "babel-preset-es2015": "6.13.2",
     "chai": "3.5.0",
+    "eslint-config-standard": "5.3.5",
+    "eslint-plugin-promise": "2.0.1",
+    "eslint-plugin-standard": "2.0.0",
     "gulp": "3.9.1",
     "gulp-babel": "6.1.2",
+    "gulp-eslint": "3.0.1",
     "gulp-istanbul": "1.0.0",
     "gulp-mocha": "3.0.0",
     "gulp-task-listing": "1.0.1",

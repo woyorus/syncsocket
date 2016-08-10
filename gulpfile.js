@@ -1,8 +1,9 @@
 const gulp = require('gulp');
 const mocha = require('gulp-mocha');
-const babel = require("gulp-babel");
+const babel = require('gulp-babel');
 const istanbul = require('gulp-istanbul');
 const help = require('gulp-task-listing');
+const eslint = require('gulp-eslint');
 
 gulp.task('help', help);
 gulp.task('default', ['transpile']);
@@ -10,12 +11,24 @@ gulp.task('default', ['transpile']);
 const TRANSPILE_DEST_DIR = './dist';
 
 gulp.task('transpile', function () {
-    return gulp.src("src/*.js")
-        .pipe(babel({ "presets": ["es2015"] }))
+    return gulp.src('src/*.js')
+        .pipe(babel({ 'presets': ['es2015'] }))
         .pipe(gulp.dest(TRANSPILE_DEST_DIR));
 });
 
-gulp.task('test', ['transpile'], function () {
+gulp.task('lint', function () {
+    return gulp.src([
+        '**/*.js',
+        '!dist/**',
+        '!node_modules/**',
+        '!coverage/**'
+    ])
+        .pipe(eslint())
+        .pipe(eslint.format())
+        .pipe(eslint.failAfterError());
+});
+
+gulp.task('test', ['lint', 'transpile'], function () {
     return gulp.src('test/index.js', { read: false })
         .pipe(mocha({
             slow: 200,
