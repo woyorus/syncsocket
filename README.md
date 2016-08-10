@@ -1,8 +1,8 @@
-# syncsocket
+# SyncSocket
 
 Synchronized messaging application framework server
 
-[![Travis](https://img.shields.io/travis/woyorus/syncsocket.svg?maxAge=2592000)](<>) [![Codecov](https://img.shields.io/codecov/c/github/woyorus/syncsocket.svg?maxAge=2592000)](<>)
+[![Build Status](https://travis-ci.org/woyorus/syncsocket.svg?branch=master)](https://travis-ci.org/woyorus/syncsocket) [![codecov](https://codecov.io/gh/woyorus/syncsocket/branch/master/graph/badge.svg)](https://codecov.io/gh/woyorus/syncsocket) [![npm](https://img.shields.io/npm/v/syncsocket.svg?maxAge=2592000)](<>)
 
 ## API Docs
 
@@ -12,11 +12,12 @@ Channel constructor.
 
 **Parameters**
 
--   `server`  The server object
--   `opts`  Options
-    -   `opts.channelId`  {string} The channel id (string). If not passed, will generate a random one
-    -   `opts.maxClients`  {number} Maximum allowed clients on the channel
-    -   `opts.autoSyncClients`  {boolean} Automatically instruct unsynchronized clients to re-synchronize
+-   `server` **[Server](#server)** The server object
+-   `opts` **[object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** Options
+    -   `opts.channelId` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The channel id (string). If not passed, will generate a random one
+    -   `opts.maxClients` **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** Maximum allowed clients on the channel
+    -   `opts.timeserver` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The timeserver which channel will use (if not set, will use the server's default)
+    -   `opts.autoSyncClients` **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** Automatically instruct unsynchronized clients to re-synchronize
 
 #### addClient
 
@@ -24,9 +25,9 @@ Adds client to the channel
 
 **Parameters**
 
--   `client`  
+-   `client` **Client** 
 
-Returns **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
+Returns **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** operation result
 
 #### hasClient
 
@@ -37,42 +38,6 @@ Whether a client is joined this channel
 -   `client`  
 
 Returns **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
-
-#### prepareSingleClient
-
-Send a 'prepare' message to a single client directly.
-
-**Parameters**
-
--   `client`  
--   `topic`  
--   `payload`  
-
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** which is resolved once client moves to ready state.
-
-#### scheduleSingleClient
-
-Send a 'schedule' message (for particular time) to a single client directly.
-
-**Parameters**
-
--   `client`  
--   `topic`  
--   `payload`  
--   `time`  
-
-#### getChannelTime
-
-Returns current time in channel time coordinates (e.g. timeserver coordinates)
-
-### Client
-
-Client constructor
-
-**Parameters**
-
--   `server`  
--   `socket`  
 
 ### Server
 
@@ -107,21 +72,28 @@ Creates a channel
 
 **Parameters**
 
--   `opts`  Options for the new channel (see Channel constructor docs)
+-   `opts`  Options for the new channel (see {Channel} constructor docs)
+
+Returns **[Channel](#channel)** that has been created
 
 #### addToChannel
 
+Adds a client to a specific channel
+
 **Parameters**
 
--   `client`  
--   `opts`  
+-   `client` **Client** 
+-   `opts` **[object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** Options
+    -   `opts.channelId` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The channel ID to add client
 
-Returns **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
+Returns **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** Operation result
 
 #### getChannel
 
+Get specific channel
+
 **Parameters**
 
--   `channelId`  
+-   `channelId`  Channel id
 
-Returns **Any** 
+Returns **?[Channel](#channel)** 

@@ -7,7 +7,7 @@ module.exports = Client;
  * @param server
  * @param socket
  * @constructor
- * @public
+ * @private
  */
 function Client(server, socket) {
     if (!(this instanceof Client)) return new Client(server, socket);

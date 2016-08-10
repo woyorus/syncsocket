@@ -14,6 +14,7 @@ util.inherits(Server, EventEmitter);
 
 /**
  * Server constructor
+ * @type {Server}
  * @param opts Options
  * @param opts.maxChannels {number} Maximum channels allowed per server
  * @param opts.maxClients {number} Maximum clients allowed to connect to server
@@ -93,7 +94,8 @@ Server.prototype.close = function () {
 
 /**
  * Creates a channel
- * @param opts Options for the new channel (see Channel constructor docs)
+ * @param opts Options for the new channel (see {Channel} constructor docs)
+ * @returns {Channel} that has been created
  * @public
  */
 Server.prototype.createChannel = function (opts) {
@@ -171,10 +173,12 @@ Server.prototype.handleRequest = function (req, fn, client) {
 };
 
 /**
- *
- * @param client
- * @param opts
- * @returns {boolean}
+ * Adds a client to a specific channel
+ * @param {Client} client
+ * @param {object} opts Options
+ * @param {string} opts.channelId The channel ID to add client
+ * @returns {boolean} Operation result
+ * @public
  */
 Server.prototype.addToChannel = function (client, opts) {
     var channel = this.getChannel(opts.channelId);
@@ -189,9 +193,10 @@ Server.prototype.addToChannel = function (client, opts) {
 };
 
 /**
- *
- * @param channelId
- * @returns {*}
+ * Get specific channel
+ * @param channelId Channel id
+ * @returns {?Channel}
+ * @public
  */
 Server.prototype.getChannel = function (channelId) {
     var ch = null;

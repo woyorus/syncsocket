@@ -11,11 +11,13 @@ util.inherits(Channel, EventEmitter);
 
 /**
  * Channel constructor.
- * @param server The server object
- * @param opts Options
- * @param opts.channelId {string} The channel id (string). If not passed, will generate a random one
- * @param opts.maxClients {number} Maximum allowed clients on the channel
- * @param opts.autoSyncClients {boolean} Automatically instruct unsynchronized clients to re-synchronize
+ * @type {Channel}
+ * @param {Server} server The server object
+ * @param {object} opts Options
+ * @param {string} opts.channelId The channel id (string). If not passed, will generate a random one
+ * @param {number} opts.maxClients  Maximum allowed clients on the channel
+ * @param {string} opts.timeserver The timeserver which channel will use (if not set, will use the server's default)
+ * @param {boolean} opts.autoSyncClients  Automatically instruct unsynchronized clients to re-synchronize
  * @constructor
  * @public
  */
@@ -72,8 +74,8 @@ Channel.prototype.onSyncFailure = function (result) {
 
 /**
  * Adds client to the channel
- * @param client
- * @returns {boolean}
+ * @param {Client} client
+ * @returns {boolean} operation result
  * @public
  */
 Channel.prototype.addClient = function (client) {
@@ -140,7 +142,7 @@ Channel.prototype.synchronizeClient = function (client) {
  * Whether a client is joined this channel
  * @param client
  * @returns {boolean}
- * @ublic
+ * @public
  */
 Channel.prototype.hasClient = function (client) {
     return this.clients.indexOf(client) !== -1;
@@ -163,7 +165,7 @@ Channel.prototype.fanout = function (envelope) {
  * @param topic
  * @param payload
  * @returns {Promise} which is resolved once client moves to ready state.
- * @public
+ * @private
  */
 Channel.prototype.prepareSingleClient = function (client, topic, payload) {
     var envelope = {
@@ -185,7 +187,7 @@ Channel.prototype.prepareSingleClient = function (client, topic, payload) {
  * @param topic
  * @param payload
  * @param time
- * @public
+ * @private
  */
 Channel.prototype.scheduleSingleClient = function (client, topic, payload, time) {
     var envelope = {
@@ -202,7 +204,7 @@ Channel.prototype.scheduleSingleClient = function (client, topic, payload, time)
 
 /**
  * Returns current time in channel time coordinates (e.g. timeserver coordinates)
- * @public
+ * @private
  */
 Channel.prototype.getChannelTime = function () {
     var time = Date.now() + this.lastSyncResult.adjust;
