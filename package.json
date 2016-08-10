@@ -26,9 +26,15 @@
   },
   "homepage": "https://github.com/woyorus/syncsocket",
   "devDependencies": {
+    "babel-preset-es2015": "6.13.2",
     "chai": "3.5.0",
+    "gulp": "3.9.1",
+    "gulp-babel": "6.1.2",
+    "gulp-istanbul": "1.0.0",
+    "gulp-mocha": "3.0.0",
+    "gulp-task-listing": "1.0.1",
     "istanbul": "0.4.4",
-    "mocha": "2.5.3"
+    "mocha": "3.0.2"
   },
   "dependencies": {
     "component-bind": "1.0.0",
