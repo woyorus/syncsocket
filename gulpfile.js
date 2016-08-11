@@ -45,6 +45,12 @@ gulp.task('test', ['lint', 'transpile'], function () {
         });
 });
 
+gulp.task('set-compat-node-env', function () {
+    process.env.TEST_VERSION = 'compat';
+});
+
+gulp.task('test-compat', ['set-compat-node-env', 'test']);
+
 gulp.task('istanbul-pre-test', function () {
     return gulp.src(['src/**/*.js'])
         .pipe(istanbul())

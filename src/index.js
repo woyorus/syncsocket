@@ -12,6 +12,9 @@ module.exports = Server;
 
 util.inherits(Server, EventEmitter);
 
+const DEFAULT_PORT = 6024;
+const DEFAULT_TIME_PORT = 5579;
+
 /**
  * Server constructor
  * @type {Server}
@@ -28,10 +31,9 @@ function Server(opts) {
     opts = opts || {};
     this.maxChannels = opts.maxChannels || 64;
     this.maxClients = opts.maxClients || 1024;
-    this.defaultTimeserver = opts.defaultTimeserver || 'http://localhost:5579';
+    this.defaultTimeserver = opts.defaultTimeserver || 'http://localhost:' + DEFAULT_TIME_PORT;
 
     this.clockServer = ClockServer();
-    this.clockServer.listen(5579);
 
     this.setup();
 }
@@ -43,13 +45,6 @@ function Server(opts) {
 Server.prototype.setup = function () {
     this.io = io();
     this.io.on('connection', bind(this, 'onconnection'));
-    // Setup the _SYSTEM channel
-    this.systemChannel = new Channel(this, {
-        channelId: '_SYSTEM',
-        maxClients: this.maxClients
-    });
-    this.clients = [];
-    this.channels = [this.systemChannel];
     this.listening = false;
     this.io.use(function (socket, next) {
         var id = socket.handshake.query.instanceId;
@@ -70,10 +65,20 @@ Server.prototype.setup = function () {
  * @public
  */
 Server.prototype.listen = function (port) {
-    this.io.listen(port);
+    if (typeof port !== 'number') {
+        port = DEFAULT_PORT;
+    }
     this.listening = true;
-    debug('Server is listening on port ' + port + '!');
-    return this;
+    this.clockServer.listen(DEFAULT_TIME_PORT);
+    // Setup the _SYSTEM channel
+    this.systemChannel = new Channel(this, {
+        channelId: '_SYSTEM',
+        maxClients: this.maxClients
+    });
+    this.clients = [];
+    this.channels = [this.systemChannel];
+    debug('SyncSocket server is listening on port ' + port + '...');
+    return this.io.listen(port);
 };
 
 /**
@@ -85,9 +90,9 @@ Server.prototype.close = function () {
     if (this.listening === false) {
         return this;
     }
+    this.clockServer.close();
     this.io.close();
     this.listening = false;
-    this.clockServer.close();
     debug('Server is shutting down now.');
     return this;
 };
