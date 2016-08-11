@@ -35,6 +35,9 @@ function Server(opts) {
 
     this.clockServer = ClockServer();
 
+    this.clients = [];
+    this.channels = [];
+
     this.setup();
 }
 
@@ -70,13 +73,14 @@ Server.prototype.listen = function (port) {
     }
     this.listening = true;
     this.clockServer.listen(DEFAULT_TIME_PORT);
+
     // Setup the _SYSTEM channel
     this.systemChannel = new Channel(this, {
         channelId: '_SYSTEM',
         maxClients: this.maxClients
     });
-    this.clients = [];
-    this.channels = [this.systemChannel];
+
+    this.channels.push(this.systemChannel);
     debug('SyncSocket server is listening on port ' + port + '...');
     return this.io.listen(port);
 };
