@@ -40,7 +40,7 @@
     "istanbul": "0.4.4",
     "mocha": "3.0.2",
     "supertest": "2.0.0",
-    "syncsocket-client": "0.2.5"
+    "syncsocket-client": "0.2.6"
   },
   "dependencies": {
     "component-bind": "1.0.0",

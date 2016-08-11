@@ -12,11 +12,6 @@ const expect = require('chai').expect;
 const request = require('supertest');
 
 describe('Server', function () {
-    it('should be the same version as client', function () {
-        var version = require('../package.json').version;
-        expect(version).to.be.eql(require('syncsocket-client/package').version);
-    });
-
     describe('server attachment', function () {
         describe('http.Server', function () {
             var clientVersion = require('syncsocket-client/package').version;
