@@ -1,6 +1,6 @@
 {
   "name": "syncsocket",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Synchronized messaging application framework server",
   "main": "src/index.js",
   "scripts": {
