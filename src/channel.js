@@ -1,8 +1,6 @@
 const EventEmitter = require('events').EventEmitter;
 const util = require('util');
 const debug = require('debug')('syncsocket:channel');
-const genuuid = require('./genuuid');
-const bind = require('component-bind');
 const ClockClient = require('syncsocket-clock-client');
 
 module.exports = Channel;
@@ -15,7 +13,6 @@ util.inherits(Channel, EventEmitter);
  * @param {Server} server The server object
  * @param {object} opts Options
  * @param {string} opts.channelId The channel id (string). If not passed, will generate a random one
- * @param {number} opts.maxClients  Maximum allowed clients on the channel
  * @param {string} opts.timeserver The timeserver which channel will use (if not set, will use the server's default)
  * @param {boolean} opts.autoSyncClients  Automatically instruct unsynchronized clients to re-synchronize
  * @constructor
@@ -24,15 +21,10 @@ util.inherits(Channel, EventEmitter);
 function Channel(server, opts) {
     if (!(this instanceof Channel)) return new Channel(server, opts);
 
-    opts = opts || {};
-
     this.server = server;
-    this.channelId = opts.channelId || genuuid();
-    this.maxClients = opts.maxClients || 32;
+    opts = opts || {};
+    this.channelId = opts.channelId;
     this.timeserver = opts.timeserver || this.server.defaultTimeserver;
-    this.autoSyncClients = typeof opts.autoSyncClients === 'boolean' ? opts.autoSyncClients : true;
-    this.tag = opts.tag;
-    this.locals = {};
 
     this.clients = [];
     this.clientStates = {};
@@ -41,7 +33,6 @@ function Channel(server, opts) {
     this.setMaxListeners(150);
 
     this.clockClient = ClockClient(this.timeserver);
-    this.synchronized = false;
     this.sync();
 }
 
@@ -60,13 +51,11 @@ Channel.prototype.sync = function () {
 };
 
 Channel.prototype.onSyncSuccess = function (result) {
-    this.synchronized = true;
     this.lastSyncResult = result;
-    debug('channel sync successful! (error=%s, precision=%s)', result.adjust, result.error);
+    debug('channel sync successful! (error=%d, precision=%d)', result.adjust, result.error);
 };
 
 Channel.prototype.onSyncFailure = function (result) {
-    this.synchronized = false;
     debug('channel sync failed! (precision=%s)', result.error);
     debug('retrying in 1 second...');
     setTimeout(() => this.sync(), 1000);
@@ -75,21 +64,17 @@ Channel.prototype.onSyncFailure = function (result) {
 /**
  * Adds client to the channel
  * @param {Client} client
- * @returns {boolean} operation result
  * @public
  */
 Channel.prototype.addClient = function (client) {
-    if (this.clients.length >= this.maxClients) {
-        debug('maximum number of clients per channel hit');
-        return false;
-    }
-
     this.clients.push(client);
     this.clientStates[client.id] = 'unknown';
-
-    this.emit('clientJoined', client);
-
-    return true;
+    /**
+     * Client joined the channel
+     * @event Channel#join
+     * @type {Client}
+     */
+    this.emit('join', client);
 };
 
 /**
@@ -100,9 +85,13 @@ Channel.prototype.addClient = function (client) {
 Channel.prototype.removeClient = function (client) {
     var idx = this.clients.indexOf(client);
     if (idx > -1) {
-        this.emit('clientLeft', client);
-        debug(' > [%s] client removed: %s', this.channelId, client.tag);
         this.clients.splice(idx, 1);
+        /**
+         * Client left the channel
+         * @event Channel#left
+         * @type {Client}
+         */
+        this.emit('left', client);
     }
 };
 
@@ -119,22 +108,6 @@ Channel.prototype.initializeClient = function (client) {
             timeserver: this.timeserver
         }
     };
-
-    client.send(envelope);
-};
-
-/**
- * Instructs the client to syncrhonize with the timeserver
- * @param client
- * @private
- */
-Channel.prototype.synchronizeClient = function (client) {
-    var envelope = {
-        channelId: this.channelId,
-        topic: 'service.synchronize',
-        data: {}
-    };
-
     client.send(envelope);
 };
 
@@ -146,17 +119,6 @@ Channel.prototype.synchronizeClient = function (client) {
  */
 Channel.prototype.hasClient = function (client) {
     return this.clients.indexOf(client) !== -1;
-};
-
-/**
- * Simply broadcasts a message to channel
- * @param envelope
- * @private
- */
-Channel.prototype.fanout = function (envelope) {
-    this.clients.forEach(function (client) {
-        client.send(envelope);
-    });
 };
 
 /**
@@ -231,40 +193,32 @@ Channel.prototype.injectMessage = function (envelope, originatingClient) {
 };
 
 /**
- * Processes messages posted to _SYSTEM channel
+ * Processes service messages. Currently only `reportstate` message is supported
  * @param envelope
- * @param originatingClient
+ * @param client
  * @private
  */
-Channel.prototype.processServiceMessage = function (envelope, originatingClient) {
+Channel.prototype.processServiceMessage = function (envelope, client) {
     if (envelope.topic === 'service.reportstate') {
-        var oldState = this.clientStates[originatingClient.id];
         var newState = envelope.data.toState;
-        this.clientStates[originatingClient.id] = newState;
+        this.clientStates[client.id] = newState;
 
         debug(' > [%s] client switched state: toState->%s, client: %s',
-            this.channelId, newState, originatingClient.tag);
+            this.channelId, newState, client.tag);
 
-        this.emit('clientStateChange', originatingClient, newState);
+        /**
+         * Client has switched state
+         * @event Channel#clientStateChange
+         * @type {object}
+         * @property {Client} client
+         * @property {string} newState
+         */
+        this.emit('clientStateChange', { client: client, newState: newState });
 
         switch (newState) {
-
             case 'uninitialized':
-                this.initializeClient(originatingClient);
+                this.initializeClient(client);
                 break;
-
-            case 'unsynchronized':
-                if (this.autoSyncClients === true) {
-                    this.synchronizeClient(originatingClient);
-                }
-                break;
-
-            case 'idle':
-                if (oldState === 'unsynchronized') {
-                    this.emit('clientResynchronized', originatingClient);
-                }
-                break;
-
         }
     }
 };
@@ -282,13 +236,6 @@ Channel.prototype.processUserMessage = function (envelope, originatingClient) {
     envelope.headers = envelope.headers || {};
     envelope.headers['x-origin-id'] = originatingClient.id;
 
-    if (envelope.headers['x-passthrough'] === true) {
-        this.fanout(envelope);
-        return;
-    }
-
-    this.emit('prepareMessage', envelope);
-
     var targetClients = this.prepareIdleClients(envelope, originatingClient);
 
     this.waitUntilReady(targetClients)
@@ -300,18 +247,21 @@ Channel.prototype.processUserMessage = function (envelope, originatingClient) {
 
 /**
  * Selects all idle clients, sends them prepare message and waits until all are ready
- * @param envelope
- * @param initiatingClient
- * @returns {Promise}
+ * @param {object} envelope - message
+ * @returns {Array<Client>} Clients that were instructed to prepare
  * @private
  */
-Channel.prototype.prepareIdleClients = function (envelope, initiatingClient) {
+Channel.prototype.prepareIdleClients = function (envelope) {
     var idleClients = this.getIdleClients();
-    var that = this;
 
-    idleClients.forEach(function (idleClient) {
-        that.prepareClient(idleClient, envelope);
-    });
+    var prepareEnvelope = {
+        topic: envelope.topic + '.prepare',
+        data: envelope.data
+    };
+
+    for (var i = 0; i < idleClients.length; i++) {
+        idleClients[i].send(prepareEnvelope);
+    }
 
     return idleClients;
 };
@@ -327,12 +277,13 @@ Channel.prototype.waitUntilReady = function (clients) {
 
     var allReady = function () {
         var ready = true;
-        clients.forEach(function (client) {
-            ready = ready && (that.clientStates[client.id] === 'ready');
-        });
+        for (var i = 0; i < clients.length; i++) {
+            ready = ready && (that.clientStates[clients[i].id] === 'ready');
+        }
         return ready;
     };
 
+    // TODO: Cancel processing and reject if a client is not ready for too long
     return new Promise(function (resolve, reject) {
         var onClientStateUpdate = function (client, newState) {
             if (allReady() === true) {
@@ -340,8 +291,7 @@ Channel.prototype.waitUntilReady = function (clients) {
                 resolve(clients);
             }
         };
-
-        that.on('clientStateChange', bind(this, onClientStateUpdate));
+        that.on('clientStateChange', onClientStateUpdate.bind(this));
     });
 };
 
@@ -362,17 +312,6 @@ Channel.prototype.getIdleClients = function () {
 };
 
 /**
- * Instruct a client to prepare for a message
- * @param client
- * @param envelope
- * @private
- */
-Channel.prototype.prepareClient = function (client, envelope) {
-    envelope.topic = envelope.topic + '.prepare';
-    client.send(envelope);
-};
-
-/**
  * Schedules clients, i.e. instructs them to set up timers
  * @param envelope The message
  * @param clients Clients to be scheduled
@@ -380,10 +319,17 @@ Channel.prototype.prepareClient = function (client, envelope) {
  * @private
  */
 Channel.prototype.scheduleClients = function (envelope, clients, time) {
-    clients.forEach(client => {
-        this.scheduleClient(client, envelope, time);
-    });
-    this.emit('scheduledMessage', envelope, time);
+    for (var i = 0; i < clients.length; i++) {
+        this.scheduleClient(clients[i], envelope, time);
+    }
+    /**
+     * An event has been scheduled
+     * @event Channel#scheduledMessage
+     * @type {object}
+     * @property {object} envelope
+     * @property {number} time
+     */
+    this.emit('scheduledMessage', { envelope: envelope, time: time });
 };
 
 /**

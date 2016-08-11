@@ -1,5 +1,3 @@
-const bind = require('component-bind');
-
 module.exports = Client;
 
 /**
@@ -11,10 +9,8 @@ module.exports = Client;
  */
 function Client(server, socket) {
     if (!(this instanceof Client)) return new Client(server, socket);
-
     this.server = server;
     this.socket = socket;
-    this.tag = 'unknown-client';
     this.bindEvents();
 }
 
@@ -28,13 +24,13 @@ Client.prototype.send = function (envelope) {
 };
 
 Client.prototype.bindEvents = function () {
-    this.socket.on('request', bind(this, 'onRequest'));
-    this.socket.on('message', bind(this, 'onMessage'));
-    this.socket.on('disconnect', bind(this, 'onDisconnect'));
+    this.socket.on('request', this.onRequest.bind(this));
+    this.socket.on('message', this.onMessage.bind(this));
+    this.socket.on('disconnect', this.onDisconnect.bind(this));
 };
 
 Client.prototype.onRequest = function (req, fn) {
-    this.server.handleRequest(req, fn, this);
+    this.server.handleRequest(req, this, fn);
 };
 
 Client.prototype.onMessage = function (envelope) {
