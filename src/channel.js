@@ -24,7 +24,7 @@ function Channel(server, opts) {
     this.server = server;
     opts = opts || {};
     this.channelId = opts.channelId;
-    this.timeserver = opts.timeserver || this.server.defaultTimeserverUrl;
+    this.timeserver = opts.timeserver || this.server.timeserverUrl();
 
     this.clients = [];
     this.clientStates = {};
@@ -46,7 +46,13 @@ Channel.prototype.sync = function () {
             }
         })
         .catch(err => {
-            console.error(err);
+            debug('problem while synchronizing');
+            /**
+             * Channel error
+             * @event Channel#error
+             * @type {object}
+             */
+            this.emit('error', err);
         });
 };
 

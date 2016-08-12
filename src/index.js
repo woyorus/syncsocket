@@ -37,10 +37,17 @@ function Server(srv, opts) {
     this.embeddedTimeserver(opts.embeddedTimeserver || false);
     this.timeserverHost(opts.timeserverHost || 'localhost');
     this.timeserverPort(opts.timeserverPort || 5579);
-    this.defaultTimeserverUrl = 'http://' + this.timeserverHost() + ':' + this.timeserverPort();
     this.channels = [];
     if (srv) this.attach(srv, opts);
 }
+
+/**
+ * URL of server's default timeserver (set via timeserverHost() and timeserverPort())
+ * @returns {string} URL
+ */
+Server.prototype.timeserverUrl = function () {
+    return 'http://' + this.timeserverHost() + ':' + this.timeserverPort();
+};
 
 /**
  * Sets client serving path
@@ -143,7 +150,7 @@ Server.prototype.attach = function (srv, opts) {
     if (this._embeddedTimeserver) this.setupTimeserver();
     this.httpServer = srv;
     this.io.on('connection', this.onconnection.bind(this));
-    this.io.use(this.validateConnection);
+    this.io.use(this.validateConnection.bind(this));
 
     return this;
 };
@@ -223,10 +230,13 @@ Server.prototype.serve = function (req, res) {
 /**
  * Creates a channel
  * @param {?string} channelId - channel id or null. If null, then id will be generated
- * @returns {Channel} that has been created
+ * @returns {?Channel} that has been created or null
  * @public
  */
 Server.prototype.createChannel = function (channelId) {
+    if ('object' === typeof this.getChannel(channelId)) {
+        return null;
+    }
     var opts = {};
     opts.channelId = channelId || genuuid();
     var channel = new Channel(this, opts);
@@ -268,7 +278,10 @@ Server.prototype.handleRequest = function (req, client, fn) {
 
     switch (what) {
         case 'join_channel':
-
+            if (!data) {
+                fn(new Error('invalid request'));
+                return;
+            }
             var opts = {
                 canPublish: data.canPublish,
                 channelId: data.channelId
@@ -281,6 +294,9 @@ Server.prototype.handleRequest = function (req, client, fn) {
             }
 
             break;
+        default:
+            fn(new Error('invalid request'));
+            break;
     }
 };
 
@@ -292,14 +308,20 @@ Server.prototype.handleRequest = function (req, client, fn) {
  */
 Server.prototype.handleMessage = function (envelope, client) {
     debug('handling message from client ' + client.id);
+    if ('object' !== typeof envelope) {
+        client.kick();
+        return;
+    }
     var channelId = envelope.channelId;
     var channel = this.getChannel(channelId);
     if ('object' === typeof channel) {
         // Verify that the client currently in that channel
         if (channel.hasClient(client)) {
             channel.injectMessage(envelope, client);
+            return;
         }
     }
+    client.kick();
 };
 
 /**

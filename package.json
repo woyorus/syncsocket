@@ -41,6 +41,7 @@
     "gulp-task-listing": "1.0.1",
     "istanbul": "0.4.4",
     "mocha": "3.0.2",
+    "socket.io-client": "1.4.8",
     "supertest": "2.0.0"
   },
   "dependencies": {

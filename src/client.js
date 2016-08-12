@@ -40,3 +40,7 @@ Client.prototype.onMessage = function (envelope) {
 Client.prototype.onDisconnect = function () {
     this.server.clientDisconnected(this);
 };
+
+Client.prototype.kick = function () {
+    this.socket.disconnect();
+};
