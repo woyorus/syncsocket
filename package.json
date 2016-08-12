@@ -5,7 +5,9 @@
   "main": "src/index.js",
   "scripts": {
     "test": "gulp test",
-    "cover": "gulp test-cov"
+    "cover": "gulp test-cov",
+    "preversion": "gulp test",
+    "postversion": "git push && git push --tags"
   },
   "repository": {
     "type": "git",
@@ -45,7 +47,7 @@
     "component-bind": "1.0.0",
     "debug": "2.2.0",
     "socket.io": "1.4.8",
-    "syncsocket-client": "0.2.6",
+    "syncsocket-client": "0.2.7",
     "syncsocket-clock-client": "0.1.10",
     "syncsocket-clock-server": "0.1.7"
   }

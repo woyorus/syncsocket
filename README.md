@@ -77,16 +77,6 @@ Server constructor
 -   `timeserverHost` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Clients will connect to this timeserver if no timeserver specified for channel
 -   `timeserverPort` **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** Clients will connect to this timeserver if no timeserver specified for channel
 
-#### path
-
-Sets client serving path
-
-**Parameters**
-
--   `p` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** path
-
-Returns **([Server](#server) \| [string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String))** self when setting or value when getting
-
 #### serveClient
 
 Sets/gets whether client code is being served

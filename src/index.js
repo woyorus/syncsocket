@@ -46,7 +46,7 @@ function Server(srv, opts) {
  * Sets client serving path
  * @param {string} p path
  * @returns {Server|string} self when setting or value when getting
- * @public
+ * @private
  */
 Server.prototype.path = function (p) {
     if (!arguments.length) return this._path;
