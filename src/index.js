@@ -10,10 +10,6 @@ const EventEmitter = require('events').EventEmitter;
 const clientVersion = require('syncsocket-client/package').version;
 const clientSource = read(require.resolve('syncsocket-client/syncsocket.js'), 'utf-8');
 const ClockServer = require('syncsocket-clock-server');
-const publicIp = require('public-ip');
-
-// Used for embedded timeserver
-const defaultTimeserverPort = 5579;
 
 module.exports = Server;
 
@@ -36,6 +32,8 @@ function Server(srv, opts) {
     this.path(opts.path || '/syncsocket');
     this.serveClient(false !== opts.serveClient);
     this.embeddedTimeserver(opts.embeddedTimeserver || false);
+    this.timeserverHost(opts.timeserverHost || 'localhost');
+    this.timeserverPort(opts.timeserverPort || 5579);
     this.channels = [];
     if (srv) this.attach(srv, opts);
 }
@@ -73,6 +71,18 @@ Server.prototype.serveClient = function (v) {
 Server.prototype.embeddedTimeserver = function (v) {
     if (!arguments.length) return this._embeddedTimeserver;
     this._embeddedTimeserver = v;
+    return this;
+};
+
+Server.prototype.timeserverHost = function (v) {
+    if (!arguments.length) return this._timeserverHost;
+    this._timeserverHost = v;
+    return this;
+};
+
+Server.prototype.timeserverPort = function (v) {
+    if (!arguments.length) return this._timeserverPort;
+    this._timeserverPort = v;
     return this;
 };
 
@@ -124,11 +134,9 @@ Server.prototype.attach = function (srv, opts) {
 
 Server.prototype.setupTimeserver = function () {
     debug('activating embedded timeserver on default port');
+    this.defaultTimeserver = 'http://' + this.timeserverHost() + ':' + this.timeserverPort();
     this.timeserver = ClockServer();
-    this.timeserver.listen(defaultTimeserverPort);
-    publicIp.v4().then(ip => {
-        this.defaultTimeserver = 'http://' + ip + ':' + defaultTimeserverPort;
-    });
+    this.timeserver.listen(this.timeserverPort());
 };
 
 /**
