@@ -32,7 +32,7 @@ function Server(srv, opts) {
         srv = null;
     }
     opts = opts || {};
-    this.path(opts.path || '/syncsocket');
+    this.path('/syncsocket');
     this.serveClient(false !== opts.serveClient);
     this.embeddedTimeserver(opts.embeddedTimeserver || false);
     this.timeserverHost(opts.timeserverHost || 'localhost');
@@ -132,7 +132,7 @@ Server.prototype.attach = function (srv, opts) {
     }
 
     opts = opts || {};
-    opts.path = opts.path || this.path();
+    opts.path = this.path();
 
     // Initialize socket.io
     debug('creating socket.io instance with opts %j', opts);

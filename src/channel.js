@@ -254,13 +254,10 @@ Channel.prototype.processUserMessage = function (envelope, originatingClient) {
 Channel.prototype.prepareIdleClients = function (envelope) {
     var idleClients = this.getIdleClients();
 
-    var prepareEnvelope = {
-        topic: envelope.topic + '.prepare',
-        data: envelope.data
-    };
+    envelope.topic = envelope.topic + '.prepare';
 
     for (var i = 0; i < idleClients.length; i++) {
-        idleClients[i].send(prepareEnvelope);
+        idleClients[i].send(envelope);
     }
 
     return idleClients;
