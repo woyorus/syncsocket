@@ -19,6 +19,9 @@ util.inherits(Server, EventEmitter);
  * Server constructor
  * @param {http.Server|number|object} srv http server, port or options
  * @param {object} opts
+ * @property {boolean} embeddedTimeserver If set to true, an embedded timeserver will be launched
+ * @property {string} timeserverHost Clients will connect to this timeserver if no timeserver specified for channel
+ * @property {number} timeserverPort Clients will connect to this timeserver if no timeserver specified for channel
  * @constructor
  * @public
  */
@@ -74,12 +77,24 @@ Server.prototype.embeddedTimeserver = function (v) {
     return this;
 };
 
+/**
+ * Sets/gets timeserver host to which clients will connect if no timeserver specified for channel
+ * @param {string} v default host
+ * @returns {Server|string} self when setting or value when getting
+ * @public
+ */
 Server.prototype.timeserverHost = function (v) {
     if (!arguments.length) return this._timeserverHost;
     this._timeserverHost = v;
     return this;
 };
 
+/**
+ * Sets/gets timeserver port to which clients will connect if no timeserver specified for channel
+ * @param {number} v default port
+ * @returns {Server|number} self when setting or value when getting
+ * @public
+ */
 Server.prototype.timeserverPort = function (v) {
     if (!arguments.length) return this._timeserverPort;
     this._timeserverPort = v;
@@ -132,6 +147,10 @@ Server.prototype.attach = function (srv, opts) {
     return this;
 };
 
+/**
+ * Sets up a parallel, embedded timeserver
+ * @private
+ */
 Server.prototype.setupTimeserver = function () {
     debug('activating embedded timeserver on default port');
     this.defaultTimeserver = 'http://' + this.timeserverHost() + ':' + this.timeserverPort();
@@ -143,6 +162,7 @@ Server.prototype.setupTimeserver = function () {
  * Incoming connection verification function. Server-side handshake
  * @param {sio.Socket} socket incoming connection
  * @param {Function} next middleware handler
+ * @private
  */
 Server.prototype.validateConnection = function (socket, next) {
     var id = socket.handshake.query.instanceId;
