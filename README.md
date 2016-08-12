@@ -2,7 +2,7 @@
 
 Synchronized messaging application framework server
 
-[![Build Status](https://travis-ci.org/woyorus/syncsocket.svg?branch=master)](https://travis-ci.org/woyorus/syncsocket) [![codecov](https://codecov.io/gh/woyorus/syncsocket/branch/master/graph/badge.svg)](https://codecov.io/gh/woyorus/syncsocket) [![npm](https://img.shields.io/npm/v/syncsocket.svg?maxAge=2592000)](<>)
+[![Build Status](https://travis-ci.org/woyorus/syncsocket.svg?branch=master)](https://travis-ci.org/woyorus/syncsocket) [![codecov](https://codecov.io/gh/woyorus/syncsocket/branch/master/graph/badge.svg)](https://codecov.io/gh/woyorus/syncsocket) [![npm](https://img.shields.io/npm/v/syncsocket.svg?maxAge=2592000)](<>) [![npm](https://img.shields.io/npm/dm/syncsocket.svg?maxAge=2592000)](<>) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 
 ## API Docs
 
@@ -35,6 +35,10 @@ Whether a client is joined this channel
 -   `client`  
 
 Returns **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
+
+### Channel#error
+
+Channel error
 
 ### Channel#join
 
@@ -76,6 +80,12 @@ Server constructor
 -   `embeddedTimeserver` **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** If set to true, an embedded timeserver will be launched
 -   `timeserverHost` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Clients will connect to this timeserver if no timeserver specified for channel
 -   `timeserverPort` **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** Clients will connect to this timeserver if no timeserver specified for channel
+
+#### timeserverUrl
+
+URL of server's default timeserver (set via timeserverHost() and timeserverPort())
+
+Returns **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** URL
 
 #### serveClient
 
@@ -136,7 +146,7 @@ Creates a channel
 
 -   `channelId` **?[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** channel id or null. If null, then id will be generated
 
-Returns **[Channel](#channel)** that has been created
+Returns **?[Channel](#channel)** that has been created or null
 
 #### addToChannel
 
