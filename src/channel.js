@@ -24,7 +24,7 @@ function Channel(server, opts) {
     this.server = server;
     opts = opts || {};
     this.channelId = opts.channelId;
-    this.timeserver = opts.timeserver || this.server.defaultTimeserver;
+    this.timeserver = opts.timeserver || this.server.defaultTimeserverUrl;
 
     this.clients = [];
     this.clientStates = {};

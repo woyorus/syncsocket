@@ -37,6 +37,7 @@ function Server(srv, opts) {
     this.embeddedTimeserver(opts.embeddedTimeserver || false);
     this.timeserverHost(opts.timeserverHost || 'localhost');
     this.timeserverPort(opts.timeserverPort || 5579);
+    this.defaultTimeserverUrl = 'http://' + this.timeserverHost() + ':' + this.timeserverPort();
     this.channels = [];
     if (srv) this.attach(srv, opts);
 }
@@ -153,7 +154,6 @@ Server.prototype.attach = function (srv, opts) {
  */
 Server.prototype.setupTimeserver = function () {
     debug('activating embedded timeserver on default port');
-    this.defaultTimeserver = 'http://' + this.timeserverHost() + ':' + this.timeserverPort();
     this.timeserver = ClockServer();
     this.timeserver.listen(this.timeserverPort());
 };

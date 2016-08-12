@@ -15,7 +15,6 @@ Channel constructor.
 -   `server` **[Server](#server)** The server object
 -   `opts` **[object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** Options
     -   `opts.channelId` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The channel id (string). If not passed, will generate a random one
-    -   `opts.maxClients` **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** Maximum allowed clients on the channel
     -   `opts.timeserver` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The timeserver which channel will use (if not set, will use the server's default)
     -   `opts.autoSyncClients` **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** Automatically instruct unsynchronized clients to re-synchronize
 
@@ -27,8 +26,6 @@ Adds client to the channel
 
 -   `client` **Client** 
 
-Returns **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** operation result
-
 #### hasClient
 
 Whether a client is joined this channel
@@ -39,32 +36,107 @@ Whether a client is joined this channel
 
 Returns **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
 
+### Channel#join
+
+Client joined the channel
+
+### Channel#left
+
+Client left the channel
+
+### Channel#clientStateChange
+
+Client has switched state
+
+**Properties**
+
+-   `client` **Client** 
+-   `newState` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** 
+
+### Channel#scheduledMessage
+
+An event has been scheduled
+
+**Properties**
+
+-   `envelope` **[object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** 
+-   `time` **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** 
+
 ### Server
 
 Server constructor
 
 **Parameters**
 
--   `opts`  Options
-    -   `opts.maxChannels`  {number} Maximum channels allowed per server
-    -   `opts.maxClients`  {number} Maximum clients allowed to connect to server
-    -   `opts.defaultTimeserver`  {string} Default timeserver which channels will use
+-   `srv` **(http.Server | [number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number) \| [object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object))** http server, port or options
+-   `opts` **[object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** 
 
-#### listen
+**Properties**
 
-Commands server to start listening for incoming clients
+-   `embeddedTimeserver` **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** If set to true, an embedded timeserver will be launched
+-   `timeserverHost` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Clients will connect to this timeserver if no timeserver specified for channel
+-   `timeserverPort` **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** Clients will connect to this timeserver if no timeserver specified for channel
+
+#### path
+
+Sets client serving path
 
 **Parameters**
 
--   `port`  Which port to use for listening
+-   `p` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** path
 
-Returns **[Server](#server)** 
+Returns **([Server](#server) \| [string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String))** self when setting or value when getting
 
-#### close
+#### serveClient
 
-Shuts down the server
+Sets/gets whether client code is being served
 
-Returns **[Server](#server)** 
+**Parameters**
+
+-   `v` **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** whether to serve client code
+
+Returns **([Server](#server) \| [boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean))** self when setting or value when getting
+
+#### embeddedTimeserver
+
+Sets/gets whether embedded timeserver is active
+
+**Parameters**
+
+-   `v` **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** whether to activate integrated timeserver
+
+Returns **([Server](#server) \| [boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean))** self when setting or value when getting
+
+#### timeserverHost
+
+Sets/gets timeserver host to which clients will connect if no timeserver specified for channel
+
+**Parameters**
+
+-   `v` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** default host
+
+Returns **([Server](#server) \| [string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String))** self when setting or value when getting
+
+#### timeserverPort
+
+Sets/gets timeserver port to which clients will connect if no timeserver specified for channel
+
+**Parameters**
+
+-   `v` **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** default port
+
+Returns **([Server](#server) \| [number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number))** self when setting or value when getting
+
+#### listen
+
+Attaches to a server or port
+
+**Parameters**
+
+-   `server` **(http.Server | [number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number))** or port
+-   `options` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** 
+
+Returns **[Server](#server)** self
 
 #### createChannel
 
@@ -72,7 +144,7 @@ Creates a channel
 
 **Parameters**
 
--   `opts`  Options for the new channel (see {Channel} constructor docs)
+-   `channelId` **?[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** channel id or null. If null, then id will be generated
 
 Returns **[Channel](#channel)** that has been created
 
@@ -97,3 +169,17 @@ Get specific channel
 -   `channelId`  Channel id
 
 Returns **?[Channel](#channel)** 
+
+#### close
+
+Shuts down the server
+
+Returns **[Server](#server)** 
+
+### Server#connection
+
+Client has successfully connected
+
+### Server#disconnect
+
+Client has disconnected
