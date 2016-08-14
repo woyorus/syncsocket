@@ -1,16 +1,8 @@
-const http = require('http').Server;
-const testVersion = process.env.TEST_VERSION;
-var Server;
-if (testVersion === 'compat') {
-    console.log('testing compat version');
-    Server = require('../dist');
-} else {
-    Server = require('../src');
-}
 const expect = require('chai').expect;
-// const connectClient = require('syncsocket-client');
-const request = require('supertest');
+const Server = require('./index');
 const ioc = require('socket.io-client');
+const request = require('supertest');
+const http = require('http').Server;
 
 describe('Server', function () {
     describe('server attachment', function () {

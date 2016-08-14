@@ -11,7 +11,7 @@ gulp.task('default', ['transpile']);
 const TRANSPILE_DEST_DIR = './dist';
 
 gulp.task('transpile', function () {
-    return gulp.src('src/*.js')
+    return gulp.src(['src/*.js', '!src/*.test.js'])
         .pipe(babel({ 'presets': ['es2015'] }))
         .pipe(gulp.dest(TRANSPILE_DEST_DIR));
 });
@@ -29,7 +29,7 @@ gulp.task('lint', function () {
 });
 
 gulp.task('test', ['lint', 'transpile'], function () {
-    return gulp.src('test/index.js', { read: false })
+    return gulp.src('src/*.test.js', { read: false })
         .pipe(mocha({
             slow: 200,
             reporter: 'spec',
@@ -52,13 +52,13 @@ gulp.task('set-compat-node-env', function () {
 gulp.task('test-compat', ['set-compat-node-env', 'test']);
 
 gulp.task('istanbul-pre-test', function () {
-    return gulp.src(['src/**/*.js'])
+    return gulp.src(['src/*.js', '!src/*.test.js'])
         .pipe(istanbul())
         .pipe(istanbul.hookRequire());
 });
 
 gulp.task('test-cov', ['istanbul-pre-test'], function () {
-    return gulp.src('test/index.js', { read: false })
+    return gulp.src('src/*.test.js', { read: false })
         .pipe(mocha({
             reporter: 'dot'
         }))
