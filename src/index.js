@@ -4,7 +4,7 @@ const read = require('fs').readFileSync;
 const debug = require('debug')('syncsocket:server');
 const Channel = require('./channel');
 const Client = require('./client');
-const genuuid = require('./genuuid');
+const uuid = require('node-uuid');
 const util = require('util');
 const EventEmitter = require('events').EventEmitter;
 const clientVersion = require('syncsocket-client/package').version;
@@ -238,7 +238,7 @@ Server.prototype.createChannel = function (channelId) {
         return null;
     }
     var opts = {};
-    opts.channelId = channelId || genuuid();
+    opts.channelId = channelId || uuid.v4();
     var channel = new Channel(this, opts);
     this.channels.push(channel);
     debug('created channel with id %s', channel.channelId);
@@ -253,7 +253,7 @@ Server.prototype.createChannel = function (channelId) {
 Server.prototype.onconnection = function (socket) {
     var client = new Client(this, socket);
     client.instanceId = socket.handshake.query.instanceId;
-    client.id = genuuid();
+    client.id = uuid.v4();
     client.tag = client.instanceId + '@' + client.id;
     debug('new client: ' + client.id);
     /**
