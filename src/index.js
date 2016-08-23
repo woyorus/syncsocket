@@ -359,21 +359,20 @@ Server.prototype.getChannel = function (channelId) {
     return ch;
 };
 
-/**
- *
- * @param client
- * @private
- */
-Server.prototype.clientDisconnected = function (client) {
-    this.channels.forEach(function (channel) {
-        channel.removeClient(client);
-    });
+Server.prototype.notifyClientDisconnected = function (client) {
+    this.removeClientFromChannels(client);
     /**
      * Client has disconnected
      * @event Server#disconnect
      * @type {Client}
      */
     this.emit('disconnect', client);
+};
+
+Server.prototype.removeClientFromChannels = function (client) {
+    this.channels.forEach(function (channel) {
+        channel.removeClient(client);
+    });
 };
 
 /**

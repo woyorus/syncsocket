@@ -19,8 +19,6 @@ util.inherits(Channel, EventEmitter);
  * @public
  */
 function Channel(server, opts) {
-    if (!(this instanceof Channel)) return new Channel(server, opts);
-
     this.server = server;
     opts = opts || {};
     this.channelId = opts.channelId;
@@ -32,7 +30,7 @@ function Channel(server, opts) {
     // Hackery
     this.setMaxListeners(150);
 
-    this.clockClient = ClockClient(this.timeserver);
+    this.clockClient = new ClockClient(this.timeserver);
     this.sync();
 }
 

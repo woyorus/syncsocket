@@ -8,7 +8,6 @@ module.exports = Client;
  * @private
  */
 function Client(server, socket) {
-    if (!(this instanceof Client)) return new Client(server, socket);
     this.server = server;
     this.socket = socket;
     this.bindEvents();
@@ -38,7 +37,7 @@ Client.prototype.onMessage = function (envelope) {
 };
 
 Client.prototype.onDisconnect = function () {
-    this.server.clientDisconnected(this);
+    this.server.notifyClientDisconnected(this);
 };
 
 Client.prototype.kick = function () {
