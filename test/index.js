@@ -1,5 +1,5 @@
 const expect = require('chai').expect;
-const Server = require('./index');
+const Server = require('./../src/index');
 const ioc = require('socket.io-client');
 const request = require('supertest');
 const http = require('http').Server;

@@ -2,8 +2,7 @@
   "extends": "standard",
   "parser": "babel-eslint",
   "env": {
-    "node": true,
-    "mocha": true
+    "node": true
   },
   "rules": {
     "yoda": 0,
